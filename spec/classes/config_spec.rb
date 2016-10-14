@@ -1,19 +1,21 @@
 require 'spec_helper'
 describe 'puppetserver::config' do
 
+  let(:facts) { { :puppetversion => '4.5.0' } }
+
   context 'with defaults for all parameters' do
     it { should compile.with_all_deps }
     it { should contain_class('puppetserver::config') }
     it {
       should contain_file_line('ca.certificate-authority-service').with({
         'line' => 'puppetlabs.services.ca.certificate-authority-service/certificate-authority-service',
-        'path' => '/etc/puppetserver/bootstrap.cfg',
+        'path' => '/etc/puppetlabs/puppetserver/bootstrap.cfg',
       })
     }
     it {
       should contain_file_line('ca.certificate-authority-disabled-service').with({
         'line' => '#puppetlabs.services.ca.certificate-authority-disabled-service/certificate-authority-disabled-service',
-        'path' => '/etc/puppetserver/bootstrap.cfg',
+        'path' => '/etc/puppetlabs/puppetserver/bootstrap.cfg',
       })
     }
   end

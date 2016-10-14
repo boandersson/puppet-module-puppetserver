@@ -1,6 +1,8 @@
 require 'spec_helper'
 describe 'puppetserver' do
 
+  let(:facts) { { :puppetversion => '4.5.0' } }
+
   context 'with defaults for all parameters' do
     it { should compile.with_all_deps }
     it { should contain_class('puppetserver') }
