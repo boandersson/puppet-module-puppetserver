@@ -56,7 +56,7 @@ describe 'puppetserver::config' do
     end
 
     context 'with invalid value' do
-      let (:params) {{ :enable_ca => 'not-a-boolean' }}
+      let(:params) { { :enable_ca => 'not-a-boolean' } }
 
       it 'should fail' do
         expect {
@@ -64,5 +64,34 @@ describe 'puppetserver::config' do
         }.to raise_error(Puppet::Error, /Unknown type of boolean given/)
       end
     end
+
+    describe 'with config file containing enabled ca' do
+      let(:params) { { :enable_ca => true } }
+
+      context 'with puppetserver version < 4.0.0' do
+        let(:facts) { { :puppetversion => '3.8.0' } }
+
+        it {
+          should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetserver/bootstrap.cfg')
+        }
+      end
+
+      context 'with puppetserver version >= 4.0.0 and <= 4.5.0' do
+        let(:facts) { { :puppetversion => '4.5.0' } }
+
+        it {
+          should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
+        }
+      end
+
+      context 'with puppetserver version >= 4.6.0' do
+        let(:facts) { { :puppetversion => '4.6.0' } }
+
+        it {
+          should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/services.d/ca.cfg')
+        }
+      end
+    end
+
   end
 end
