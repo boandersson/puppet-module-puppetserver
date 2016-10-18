@@ -57,13 +57,8 @@ class puppetserver::config(
     create_resources('puppetserver::config::java_arg', $java_args, $java_args_defaults)
   }
 
-  notify { 'blah!': }
-
   if (versioncmp($::puppetversion, '4.6.0') >= 0) {
-    $ca_path = {
-      'path' => $ca_cfg_file
-    }
-    create_resources(file_line, $ca_defaults, $ca_path)
+    create_resources(file_line, $ca_defaults, { 'path' => $ca_cfg_file } )
   } else {
     if $bootstrap_settings {
       validate_hash($bootstrap_settings)
@@ -71,12 +66,8 @@ class puppetserver::config(
     } else {
       $_bootstrap_settings = $ca_defaults
     }
-    $bootstrap_defaults = {
-      'path' => $bootstrap_cfg_file,
-    }
     validate_hash($_bootstrap_settings)
-    validate_hash($bootstrap_defaults)
-    create_resources(file_line, $_bootstrap_settings, $bootstrap_defaults)
+    create_resources(file_line, $_bootstrap_settings, { 'path' => $bootstrap_cfg_file })
   }
 
   if $puppetserver_settings {
