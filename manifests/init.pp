@@ -15,6 +15,10 @@ class puppetserver (
   $webserver_settings    = undef,
 ) {
 
+  if ($bootstrap_settings and versioncmp($::puppetversion, '4.6.0') >= 0) {
+    fail('bootstrap_settings is only valid for puppet version 4.5.0 or older')
+  }
+
   validate_re($package_ensure, '^installed$|^present$|^absent$')
   validate_re($service_ensure, '^running$|^stopped$')
   validate_string($service_name)

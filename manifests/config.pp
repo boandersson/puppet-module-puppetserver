@@ -14,16 +14,19 @@ class puppetserver::config(
   }
   validate_bool($_enable_ca)
 
-  if versioncmp($::puppetversion, '4.0.0') >= 0 {
+  if versioncmp($::puppetversion, '4.6.0') >= 0 {
     $configdir = '/etc/puppetlabs/puppetserver/conf.d'
-    $bootstrap_cfg = '/etc/puppetlabs/puppetserver/bootstrap.cfg'
+    $ca_cfg_file = '/etc/puppetlabs/puppetserver/services.d/ca.cfg'
+  } elsif versioncmp($::puppetversion, '4.0.0') >= 0 {
+    $configdir = '/etc/puppetlabs/puppetserver/conf.d'
+    $bootstrap_cfg_file = '/etc/puppetlabs/puppetserver/bootstrap.cfg'
   } else {
     $configdir = '/etc/puppetserver/conf.d'
-    $bootstrap_cfg = '/etc/puppetserver/bootstrap.cfg'
+    $bootstrap_cfg_file = '/etc/puppetserver/bootstrap.cfg'
   }
 
   if $_enable_ca == true {
-    $bootstrap_ca_defaults = {
+    $ca_defaults = {
       'ca.certificate-authority-service' => {
         'line'  => 'puppetlabs.services.ca.certificate-authority-service/certificate-authority-service',
         'match' => 'puppetlabs.services.ca.certificate-authority-service/certificate-authority-service',
@@ -34,7 +37,7 @@ class puppetserver::config(
       }
     }
   } else {
-    $bootstrap_ca_defaults = {
+    $ca_defaults = {
       'ca.certificate-authority-service' => {
         'line'  => '#puppetlabs.services.ca.certificate-authority-service/certificate-authority-service',
         'match' => 'puppetlabs.services.ca.certificate-authority-service/certificate-authority-service',
@@ -54,16 +57,27 @@ class puppetserver::config(
     create_resources('puppetserver::config::java_arg', $java_args, $java_args_defaults)
   }
 
-  if $bootstrap_settings {
-    validate_hash($bootstrap_settings)
-    $_bootstrap_settings = merge($bootstrap_ca_defaults, $bootstrap_settings)
+  notify { 'blah!': }
+
+  if (versioncmp($::puppetversion, '4.6.0') >= 0) {
+    $ca_path = {
+      'path' => $ca_cfg_file
+    }
+    create_resources(file_line, $ca_defaults, $ca_path)
   } else {
-    $_bootstrap_settings = $bootstrap_ca_defaults
+    if $bootstrap_settings {
+      validate_hash($bootstrap_settings)
+      $_bootstrap_settings = merge($ca_defaults, $bootstrap_settings)
+    } else {
+      $_bootstrap_settings = $ca_defaults
+    }
+    $bootstrap_defaults = {
+      'path' => $bootstrap_cfg_file,
+    }
+    validate_hash($_bootstrap_settings)
+    validate_hash($bootstrap_defaults)
+    create_resources(file_line, $_bootstrap_settings, $bootstrap_defaults)
   }
-  $bootstrap_defaults = {
-    'path' => $bootstrap_cfg,
-  }
-  create_resources(file_line, $_bootstrap_settings, $bootstrap_defaults)
 
   if $puppetserver_settings {
     validate_hash($puppetserver_settings)

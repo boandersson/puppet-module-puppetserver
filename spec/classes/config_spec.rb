@@ -3,7 +3,7 @@ describe 'puppetserver::config' do
 
   let(:facts) { { :puppetversion => '4.5.0' } }
 
-  context 'with defaults for all parameters' do
+  context 'with defaults for all parameters on puppet version 4.5.0' do
     it { should compile.with_all_deps }
     it { should contain_class('puppetserver::config') }
     it {
@@ -89,6 +89,22 @@ describe 'puppetserver::config' do
 
         it {
           should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/services.d/ca.cfg')
+        }
+      end
+    end
+
+    describe 'configure bootstrap.cfg' do
+      context 'appending to default bootstrap settings' do
+        Puppet::Util::Log.level = :debug
+        Puppet::Util::Log.newdestination(:console)
+
+        $settings = { 'dummy' => { 'line' => 'yadiyadiyada' } }
+        let(:facts) { { :puppetversion => '4.5.0' } }
+        let(:params) { { :bootstrap_settings => $settings } }
+
+        it {
+          should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
+          should contain_file_line('dummy').with_line('yadiyadiyada').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
         }
       end
     end

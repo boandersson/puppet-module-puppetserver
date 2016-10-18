@@ -70,5 +70,25 @@ describe 'puppetserver' do
     end
   end
 
+  describe 'validate bootstrap_settings' do
+    context 'when puppetserver version > 4.5.0' do
+      let(:facts) { { :puppetversion => '4.6.0' } }
+      let(:params) { { :bootstrap_settings => 'settings' } }
+
+      it 'should fail' do
+        expect {
+          should contain_class('puppetserver')
+        }.to raise_error(Puppet::Error, /bootstrap_settings is only valid for puppet version 4.5.0 or older/)
+      end
+    end
+
+    context 'when puppetserver == 4.5' do
+      $settings = { 'dummy' => { 'line' => 'yadiyadiyada' } }
+      let(:facts) { { :puppetversion => '4.5.0' } }
+      let(:params) { { :bootstrap_settings => $settings } }
+
+      it { should compile.with_all_deps }
+    end
+  end
 
 end
