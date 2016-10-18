@@ -4,16 +4,16 @@ describe 'puppetserver::config' do
   let(:facts) { { :puppetversion => '4.5.0' } }
 
   context 'with defaults for all parameters on puppet version 4.5.0' do
-    it { should compile.with_all_deps }
-    it { should contain_class('puppetserver::config') }
+    it { is_expected.to compile.with_all_deps }
+    it { is_expected.to contain_class('puppetserver::config') }
     it {
-      should contain_file_line('ca.certificate-authority-service').with({
+      is_expected.to contain_file_line('ca.certificate-authority-service').with({
         'line' => 'puppetlabs.services.ca.certificate-authority-service/certificate-authority-service',
         'path' => '/etc/puppetlabs/puppetserver/bootstrap.cfg',
       })
     }
     it {
-      should contain_file_line('ca.certificate-authority-disabled-service').with({
+      is_expected.to contain_file_line('ca.certificate-authority-disabled-service').with({
         'line' => '#puppetlabs.services.ca.certificate-authority-disabled-service/certificate-authority-disabled-service',
         'path' => '/etc/puppetlabs/puppetserver/bootstrap.cfg',
       })
@@ -24,14 +24,14 @@ describe 'puppetserver::config' do
     ['true',true].each do |value|
       context "as #{value}" do
         let(:params) { { :enable_ca => value } }
-        it { should compile.with_all_deps }
+        it { is_expected.to compile.with_all_deps }
         it {
-          should contain_file_line('ca.certificate-authority-service').with({
+          is_expected.to contain_file_line('ca.certificate-authority-service').with({
             'line' => 'puppetlabs.services.ca.certificate-authority-service/certificate-authority-service',
           })
         }
         it {
-          should contain_file_line('ca.certificate-authority-disabled-service').with({
+          is_expected.to contain_file_line('ca.certificate-authority-disabled-service').with({
             'line' => '#puppetlabs.services.ca.certificate-authority-disabled-service/certificate-authority-disabled-service',
           })
         }
@@ -41,14 +41,14 @@ describe 'puppetserver::config' do
     ['false',false].each do |value|
       context "as #{value}" do
         let(:params) { { :enable_ca => value } }
-        it { should compile.with_all_deps }
+        it { is_expected.to compile.with_all_deps }
         it {
-          should contain_file_line('ca.certificate-authority-service').with({
+          is_expected.to contain_file_line('ca.certificate-authority-service').with({
             'line' => '#puppetlabs.services.ca.certificate-authority-service/certificate-authority-service',
           })
         }
         it {
-          should contain_file_line('ca.certificate-authority-disabled-service').with({
+          is_expected.to contain_file_line('ca.certificate-authority-disabled-service').with({
             'line' => 'puppetlabs.services.ca.certificate-authority-disabled-service/certificate-authority-disabled-service',
           })
         }
@@ -60,7 +60,7 @@ describe 'puppetserver::config' do
 
       it 'should fail' do
         expect {
-          should contain_class('puppetserver::config')
+          is_expected.to contain_class('puppetserver::config')
         }.to raise_error(Puppet::Error, /Unknown type of boolean given/)
       end
     end
@@ -72,7 +72,7 @@ describe 'puppetserver::config' do
         let(:facts) { { :puppetversion => '3.8.0' } }
 
         it {
-          should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetserver/bootstrap.cfg')
+          is_expected.to contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetserver/bootstrap.cfg')
         }
       end
 
@@ -80,7 +80,7 @@ describe 'puppetserver::config' do
         let(:facts) { { :puppetversion => '4.5.0' } }
 
         it {
-          should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
+          is_expected.to contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
         }
       end
 
@@ -88,7 +88,7 @@ describe 'puppetserver::config' do
         let(:facts) { { :puppetversion => '4.6.0' } }
 
         it {
-          should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/services.d/ca.cfg')
+          is_expected.to contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/services.d/ca.cfg')
         }
       end
     end
@@ -103,8 +103,8 @@ describe 'puppetserver::config' do
         let(:params) { { :bootstrap_settings => $settings } }
 
         it {
-          should contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
-          should contain_file_line('dummy').with_line('yadiyadiyada').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
+          is_expected.to contain_file_line('ca.certificate-authority-service').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
+          is_expected.to contain_file_line('dummy').with_line('yadiyadiyada').with_path('/etc/puppetlabs/puppetserver/bootstrap.cfg')
         }
       end
     end
